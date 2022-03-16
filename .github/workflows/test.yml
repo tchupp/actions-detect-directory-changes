@@ -1,0 +1,57 @@
+name: build+test
+
+on:
+  - push
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          yarn run build
+
+      - name: Test
+        run: |
+          yarn run test
+
+      - name: Package
+        run: |
+          yarn run package
+
+  test-detect-changes:
+    name: "Detect Directory Changes"
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Detect Directory Changes
+        uses: ./
+        id: detect
+
+  echo-test:
+    name: "Echo Test"
+    needs: test-detect-changes
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ needs.test-detect-changes.outputs.changed }}" != "[]" ]]; then
+            echo "Wanted '[]', but got '${{ needs.test-detect-changes.outputs.changed }}'"
+            exit 1
+          fi
+          if [[ "${{ fromJSON(needs.test-detect-changes.outputs.changed) }}" != "Array" ]]; then
+            echo "Wanted 'Array', but got '${{ fromJSON(needs.test-detect-changes.outputs.changed) }}'"
+            exit 1
+          fi
+
+          echo "Success! There should never be any changes in this repo"

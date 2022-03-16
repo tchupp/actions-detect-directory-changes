@@ -1,0 +1,96 @@
+name: 'Detect Directory Changes'
+description: 'GitHub Action for gathering directories with changed files'
+branding:
+  icon: 'package'
+  color: 'blue'
+inputs:
+  included-paths:
+    description: "Comma-separated paths to narrow down the search for changes. Defaults to all if not specified."
+    required: false
+    default: ""
+  included-extensions:
+    description: "Comma-separated paths to narrow down the search for changes. Defaults to all if not specified."
+    required: false
+    default: ""
+outputs:
+  changed:
+    description: "JSON encoded object that contains the changed files. '{ changed: Array<string> }'"
+    value: ${{ steps.filter.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - name: Find changed files
+      id: find-changed-files
+      shell: bash --noprofile --norc {0}
+      run: |
+        case "${{ github.event_name }}" in
+
+          "pull_request")
+            base_ref="${GITHUB_BASE_REF}"
+
+            git fetch origin "${base_ref}"
+            changed_files=$(git --no-pager diff --name-only HEAD "origin/${base_ref}" | awk '{print "./"$1}')
+            ;;
+
+          "push")
+            git fetch origin "${{ github.event.before }}"
+            changed_files=$(git --no-pager diff-tree --name-only -r ${{ github.event.before }}..${{ github.event.after }} | awk '{print "./"$1}')
+            ;;
+
+          *)
+            changed_files=$(find . -type f)
+            ;;
+        esac
+        
+        IFS=',' read -r -a included_extensions <<< "${{ inputs.included-extensions }}"
+        
+        if [ ${#included_extensions[@]} -ne 0 ]; then
+          changed_directories=( )
+          
+          for changed_file in "${changed_files[@]}"; do
+            filename=$(basename -- "$changed_file")
+            extension="${filename##*.}"
+        
+            # included_extensions contains the changed file's extension
+            if [[ " ${included_extensions[*]} " =~ " ${value} " ]]; then
+              changed_directories=( "$changed_file" )
+            fi
+          done
+        else
+          changed_directories=( $(echo "${changed_files}" | xargs -I {} dirname {} | sort -u) )
+        fi
+        echo "changed_directories: ${changed_directories[@]}"
+
+        all_directories=( $(find . -type d | sort -u) )
+        echo "all_directories: ${all_directories[@]}"
+
+        echo "::set-output name=changed_directories::${changed_directories[@]}"
+        echo "::set-output name=all_directories::${all_directories[@]}"
+    - name: Build
+      id: build
+      shell: bash
+      run: |
+        pushd $GITHUB_ACTION_PATH
+        yarn install
+        yarn run package
+        popd
+    - name: Filter and Encode Output
+      id: filter
+      uses: actions/github-script@v4
+      env:
+        INCLUDED_PATHS: ${{ inputs.included-paths }}
+        CHANGED_DIRECTORIES: ${{ steps.find-changed-files.outputs.changed_directories }}
+        ALL_DIRECTORIES: ${{ steps.find-changed-files.outputs.all_directories }}
+      with:
+        script: |
+          const script = require(`${process.env.GITHUB_ACTION_PATH}/dist/index.js`);
+
+          const rawIncludedPaths = process.env.INCLUDED_PATHS;
+          const rawChangedDirectories = process.env.CHANGED_DIRECTORIES;
+          const rawAllDirectories = process.env.DIRECTORIES;
+
+          return script.default(
+            rawIncludedPaths,
+            rawChangedDirectories,
+            rawAllDirectories,
+          );

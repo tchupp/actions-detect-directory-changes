@@ -48,14 +48,17 @@ runs:
           changed_directories=( )
           
           for changed_file in "${changed_files[@]}"; do
+            dirname=$(dirname -- "$changed_file")
             filename=$(basename -- "$changed_file")
             extension="${filename##*.}"
         
             # included_extensions contains the changed file's extension
             if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then
-              changed_directories=( "$changed_file" )
+              changed_directories=( "$dirname" )
             fi
           done
+          
+          changed_directories=( $(echo "${changed_directories[@]}" | sort -u) )
         else
           changed_directories=( $(echo "${changed_files}" | xargs -I {} dirname {} | sort -u) )
         fi

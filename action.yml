@@ -52,7 +52,7 @@ runs:
             extension="${filename##*.}"
         
             # included_extensions contains the changed file's extension
-            if [[ " ${included_extensions[*]} " =~ " ${value} " ]]; then
+            if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then
               changed_directories=( "$changed_file" )
             fi
           done

@@ -90,7 +90,7 @@ runs:
 
           const rawIncludedPaths = process.env.INCLUDED_PATHS;
           const rawChangedDirectories = process.env.CHANGED_DIRECTORIES;
-          const rawAllDirectories = process.env.DIRECTORIES;
+          const rawAllDirectories = process.env.ALL_DIRECTORIES;
 
           return script.default(
             rawIncludedPaths,

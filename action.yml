@@ -54,7 +54,7 @@ runs:
         
             # included_extensions contains the changed file's extension
             if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then
-              changed_directories=( "$dirname" )
+              changed_directories+=( "$dirname" )
             fi
           done
           

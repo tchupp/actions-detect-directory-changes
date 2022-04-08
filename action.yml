@@ -38,7 +38,7 @@ runs:
             ;;
 
           *)
-            changed_files=$(find . -type f)
+            changed_files=( $(find . -type f) )
             ;;
         esac
         

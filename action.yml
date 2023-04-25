@@ -79,7 +79,7 @@ runs:
         popd
     - name: Filter and Encode Output
       id: filter
-      uses: actions/github-script@v4
+      uses: actions/github-script@v6
       env:
         INCLUDED_PATHS: ${{ inputs.included-paths }}
         CHANGED_DIRECTORIES: ${{ steps.find-changed-files.outputs.changed_directories }}

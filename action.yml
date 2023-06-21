@@ -67,8 +67,8 @@ runs:
         all_directories=( $(find . -type d | sort -u) )
         echo "all_directories: ${all_directories[@]}"
 
-        echo "changed_directories=${changed_directories[@]} >> $GITHUB_OUTPUT"
-        echo "all_directories=${all_directories[@]} >> $GITHUB_OUTPUT"
+        echo "changed_directories=${changed_directories[@]}" >> $GITHUB_OUTPUT
+        echo "all_directories=${all_directories[@]}" >> $GITHUB_OUTPUT
     - name: Build
       id: build
       shell: bash

@@ -42,17 +42,13 @@ export const filterFiles = (
     const inputTfDirectories = cleanPaths(rawTfDirectories);
     const inputChangedTfDirectories = cleanPaths(rawChangedTfDirectories);
 
-    const filteredChangedPaths = inputChangedTfDirectories
-        .filter(dir => inputTfDirectories.includes(dir))
-        .filter(dir => matchPaths(includedPaths, dir));
-
-    if (returnAllIfChangedPaths.length === 0) {
-        return filteredChangedPaths
-    }
-
-    if (inputChangedTfDirectories.some(changed => matchPaths(returnAllIfChangedPaths, changed))) {
+    const hasReturnAllTrigger = returnAllIfChangedPaths.length !== 0
+    const hasReturnAllTriggerChanges = inputChangedTfDirectories.some(changed => matchPaths(returnAllIfChangedPaths, changed))
+    if (hasReturnAllTrigger && hasReturnAllTriggerChanges) {
         return inputTfDirectories.filter(dir => matchPaths(includedPaths, dir))
     }
 
-    return filteredChangedPaths
+    return inputChangedTfDirectories
+        .filter(dir => inputTfDirectories.includes(dir))
+        .filter(dir => matchPaths(includedPaths, dir))
 }

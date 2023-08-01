@@ -33,14 +33,26 @@ function matchPaths(includedPaths: string[], directory: string): boolean {
 
 export const filterFiles = (
     rawIncludedPaths: string,
-    rawChangedDirectories: string,
-    rawAllDirectories: string,
+    rawReturnAllIfChangedPaths: string,
+    rawChangedTfDirectories: string,
+    rawTfDirectories: string,
 ): string[] => {
     const includedPaths = cleanPaths(rawIncludedPaths);
-    const inputAllDirectories = cleanPaths(rawAllDirectories);
-    const inputChangedDirectories = cleanPaths(rawChangedDirectories);
+    const returnAllIfChangedPaths = cleanPaths(rawReturnAllIfChangedPaths);
+    const inputTfDirectories = cleanPaths(rawTfDirectories);
+    const inputChangedTfDirectories = cleanPaths(rawChangedTfDirectories);
 
-    return inputChangedDirectories
-        .filter(dir => inputAllDirectories.includes(dir))
+    const filteredChangedPaths = inputChangedTfDirectories
+        .filter(dir => inputTfDirectories.includes(dir))
         .filter(dir => matchPaths(includedPaths, dir));
+
+    if (returnAllIfChangedPaths.length === 0) {
+        return filteredChangedPaths
+    }
+
+    if (inputChangedTfDirectories.some(changed => matchPaths(returnAllIfChangedPaths, changed))) {
+        return inputTfDirectories.filter(dir => matchPaths(includedPaths, dir))
+    }
+
+    return filteredChangedPaths
 }

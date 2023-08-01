@@ -8,6 +8,7 @@ describe("filterFiles", () => {
             const result = filterFiles(
                 undefined,
                 undefined,
+                undefined,
                 undefined
             );
 
@@ -18,6 +19,7 @@ describe("filterFiles", () => {
         it("all empty", () => {
             const result = filterFiles(
                 "      ",
+                "           ",
                 "          ",
                 "    "
             );
@@ -28,6 +30,7 @@ describe("filterFiles", () => {
 
         it("all changes exist", () => {
             const result = filterFiles(
+                "",
                 "",
                 "dev staging production modules/humans modules/teams/engineers modules/teams/leads",
                 "dev staging production modules/humans modules/teams/engineers modules/teams/leads"
@@ -47,6 +50,7 @@ describe("filterFiles", () => {
         it("removes directories that don't exist", () => {
             const result = filterFiles(
                 "",
+                "",
                 "dev staging production modules/humans modules/teams/engineers modules/teams/leads",
                 "dev staging production modules/humans modules/teams/engineers"
             );
@@ -64,6 +68,7 @@ describe("filterFiles", () => {
         it("only includes directories that changed", () => {
             const result = filterFiles(
                 "",
+                "",
                 "modules/humans modules/teams/engineers",
                 "dev staging production modules/humans modules/teams/engineers modules/teams/leads"
             );
@@ -77,6 +82,7 @@ describe("filterFiles", () => {
 
         it("removes absolute paths", () => {
             const result = filterFiles(
+                "",
                 "",
                 "/root dev staging production modules/humans modules/teams/engineers modules/teams/leads",
                 "/root dev staging production modules/humans modules/teams/engineers modules/teams/leads"
@@ -96,6 +102,7 @@ describe("filterFiles", () => {
         it("normalizes paths", () => {
             const result = filterFiles(
                 "",
+                "",
                 "modules/teams/leads/",
                 "modules/teams/leads"
             );
@@ -113,6 +120,7 @@ describe("filterFiles", () => {
         it("matches multiple directories exactly", () => {
             const result = filterFiles(
                 ". dev",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -127,6 +135,7 @@ describe("filterFiles", () => {
         it("matches single glob", () => {
             const result = filterFiles(
                 "./*",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -142,6 +151,7 @@ describe("filterFiles", () => {
         it("matches single glob in a subdirectory", () => {
             const result = filterFiles(
                 "modules/*",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -155,6 +165,7 @@ describe("filterFiles", () => {
         it("matches double glob", () => {
             const result = filterFiles(
                 "./**",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -173,6 +184,7 @@ describe("filterFiles", () => {
         it("matches double glob in a subdirectory", () => {
             const result = filterFiles(
                 "./modules/**",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -188,6 +200,7 @@ describe("filterFiles", () => {
         it("matches double glob in a subdirectory with a negative", () => {
             const result = filterFiles(
                 "./modules/** !./modules/humans",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -204,6 +217,7 @@ describe("filterFiles", () => {
         it("matches multiple directories exactly", () => {
             const result = filterFiles(
                 "!dev, !staging",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -221,6 +235,7 @@ describe("filterFiles", () => {
         it("matches single glob", () => {
             const result = filterFiles(
                 "!./*",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -237,6 +252,7 @@ describe("filterFiles", () => {
         it("matches single glob in a subdirectory", () => {
             const result = filterFiles(
                 "!modules/*",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -255,6 +271,7 @@ describe("filterFiles", () => {
         it("matches double glob", () => {
             const result = filterFiles(
                 "!./**",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -268,6 +285,7 @@ describe("filterFiles", () => {
         it("matches double glob in a subdirectory", () => {
             const result = filterFiles(
                 "!./modules/**",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -284,6 +302,7 @@ describe("filterFiles", () => {
         it("matches double glob in a subdirectory", () => {
             const result = filterFiles(
                 "!./modules/**",
+                "",
                 allDirectories,
                 allDirectories
             );
@@ -291,6 +310,56 @@ describe("filterFiles", () => {
             expect(result)
                 .toStrictEqual([
                     ".",
+                    "dev",
+                    "staging",
+                    "production",
+                ]);
+        })
+    })
+
+    describe("return all if changed", () => {
+        it("returns empty when no changes", () => {
+            const result = filterFiles(
+                "",
+                "dev",
+                "",
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([]);
+        })
+
+        it("returns all when included is empty and 'modules' has changes", () => {
+            const result = filterFiles(
+                "",
+                "modules/**",
+                "modules/humans",
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    ".",
+                    "dev",
+                    "staging",
+                    "production",
+                    "modules/humans",
+                    "modules/teams/engineers",
+                    "modules/teams/leads",
+                ]);
+        })
+
+        it("returns all included when 'modules' has changes", () => {
+            const result = filterFiles(
+                "dev staging production",
+                "modules/**",
+                "modules/humans",
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([
                     "dev",
                     "staging",
                     "production",

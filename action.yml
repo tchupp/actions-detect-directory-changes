@@ -12,6 +12,10 @@ inputs:
     description: "Comma-separated paths to narrow down the search for changes. Defaults to all if not specified."
     required: false
     default: ""
+  return-all-if-changed-paths:
+    description: "If the any terraform files on the following paths change, return all included tf files."
+    required: false
+    default: ""
 outputs:
   changed:
     description: "JSON encoded object that contains the changed files. '{ changed: Array<string> }'"

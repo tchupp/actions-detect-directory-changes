@@ -1,12 +1,14 @@
-import {filterFiles} from "./filter-files";
+import {filterFiles} from "./filter-files"
 
 export default (
     rawIncludedPaths: string | undefined,
-    rawChangedDirectories: string | undefined,
-    rawAllDirectories: string | undefined,
+    rawReturnAllIfChangedPaths: string | undefined,
+    rawChangedTfDirectories: string | undefined,
+    rawTfDirectories: string | undefined,
 ) =>
     filterFiles(
         rawIncludedPaths ?? "",
-        rawChangedDirectories ?? "",
-        rawAllDirectories ?? "",
+        rawReturnAllIfChangedPaths ?? "",
+        rawChangedTfDirectories ?? "",
+        rawTfDirectories ?? "",
     )

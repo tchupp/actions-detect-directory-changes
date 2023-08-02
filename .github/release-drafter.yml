@@ -20,12 +20,17 @@ version-resolver:
   major:
     labels:
       - 'major'
+      - 'breaking'
   minor:
     labels:
       - 'minor'
+      - 'feature'
   patch:
     labels:
       - 'patch'
+      - 'docs'
+      - 'chore'
+      - 'fix'
   default: 'patch'
 autolabeler:
   - label: 'docs'

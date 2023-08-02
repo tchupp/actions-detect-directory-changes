@@ -2,13 +2,13 @@ import {filterFiles} from "./filter-files"
 
 export default (
     rawIncludedPaths: string | undefined,
-    rawReturnAllIfChangedPaths: string | undefined,
     rawIfThesePathsChangeReturnAllIncludedPaths: string | undefined,
-    rawTfDirectories: string | undefined,
+    rawChangedDirectories: string | undefined,
+    rawDirectories: string | undefined,
 ) =>
     filterFiles(
         rawIncludedPaths ?? "",
-        rawReturnAllIfChangedPaths ?? "",
         rawIfThesePathsChangeReturnAllIncludedPaths ?? "",
-        rawTfDirectories ?? "",
+        rawChangedDirectories ?? "",
+        rawDirectories ?? "",
     )

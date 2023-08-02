@@ -34,21 +34,21 @@ function matchPaths(includedPaths: string[], directory: string): boolean {
 export const filterFiles = (
     rawIncludedPaths: string,
     rawIfThesePathsChangeReturnAllIncludedPaths: string,
-    rawChangedTfDirectories: string,
-    rawTfDirectories: string,
+    rawChangedDirectories: string,
+    rawDirectories: string,
 ): string[] => {
     const includedPaths = cleanPaths(rawIncludedPaths);
     const ifThesePathsChangeReturnAllIncludedPaths = cleanPaths(rawIfThesePathsChangeReturnAllIncludedPaths);
-    const inputTfDirectories = cleanPaths(rawTfDirectories);
-    const inputChangedTfDirectories = cleanPaths(rawChangedTfDirectories);
+    const inputDirectories = cleanPaths(rawDirectories);
+    const inputChangedDirectories = cleanPaths(rawChangedDirectories);
 
     const hasReturnAllIncludedTrigger = ifThesePathsChangeReturnAllIncludedPaths.length !== 0
-    const hasReturnAllIncludedTriggerChanges = inputChangedTfDirectories.some(changed => matchPaths(ifThesePathsChangeReturnAllIncludedPaths, changed))
+    const hasReturnAllIncludedTriggerChanges = inputChangedDirectories.some(changed => matchPaths(ifThesePathsChangeReturnAllIncludedPaths, changed))
     if (hasReturnAllIncludedTrigger && hasReturnAllIncludedTriggerChanges) {
-        return inputTfDirectories.filter(dir => matchPaths(includedPaths, dir))
+        return inputDirectories.filter(dir => matchPaths(includedPaths, dir))
     }
 
-    return inputChangedTfDirectories
-        .filter(dir => inputTfDirectories.includes(dir))
+    return inputChangedDirectories
+        .filter(dir => inputDirectories.includes(dir))
         .filter(dir => matchPaths(includedPaths, dir))
 }

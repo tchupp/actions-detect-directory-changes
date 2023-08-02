@@ -8,9 +8,10 @@ This action can be used as follows:
 
 ```yaml
       - uses: tchupp/actions-detect-directory-changes@v1
-        included-paths: ""
-        included-extentions: ""
-        if-these-paths-change-return-all-included-paths: ""
+        with:
+          included-paths: ""
+          included-extentions: ""
+          if-these-paths-change-return-all-included-paths: ""
 ```
 
 ## Background
@@ -130,8 +131,9 @@ This action can be used as follows:
 
 ```yaml
       - uses: tchupp/actions-detect-directory-changes@v1
-        included-paths: ""
-        included-extentions: "" // ex. "md,txt" OR "java,kotlin" etc.
+        with:
+          included-paths: ""
+          included-extentions: "" // ex. "md,txt" OR "java,kotlin" etc.
 ```
 
 ### Assumptions
@@ -299,7 +301,8 @@ jobs:
       - name: Detect Directory Changes
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
-        included-extentions: "!*.yml"
+        with:
+          included-extentions: "!*.yml"
 
   build: <omitted for brevity, same as above>
 ```
@@ -324,7 +327,8 @@ jobs:
       - name: Detect Directory Changes
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
-        included-paths: "!./.github/**"
+        with:
+          included-paths: "!./.github/**"
 
   build: <omitted for brevity, same as above>
 ```
@@ -351,8 +355,9 @@ jobs:
       - name: Detect Directory Changes
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
-        included-paths: "!./.github/**"
-        if-these-paths-change-return-all-included-paths: "./.github/**"
+        with:
+          included-paths: "!./.github/**"
+          if-these-paths-change-return-all-included-paths: "./.github/**"
 
   build: <omitted for brevity, same as above>
 ```

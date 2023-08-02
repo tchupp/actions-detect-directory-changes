@@ -114,9 +114,23 @@ describe("filterFiles", () => {
         })
     })
 
-    const allDirectories = ". dev staging production modules/humans modules/teams/engineers modules/teams/leads";
+    const allDirectories = ". ./dev ./staging ./production ./modules/humans ./modules/teams/engineers ./modules/teams/leads";
 
     describe("includes", () => {
+        it("matches single directory (without './') exactly", () => {
+            const result = filterFiles(
+                "dev",
+                "",
+                "./dev",
+                "./dev"
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    "dev",
+                ]);
+        })
+
         it("matches multiple directories exactly", () => {
             const result = filterFiles(
                 ". dev",

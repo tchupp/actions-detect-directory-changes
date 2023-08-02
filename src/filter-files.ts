@@ -33,18 +33,18 @@ function matchPaths(includedPaths: string[], directory: string): boolean {
 
 export const filterFiles = (
     rawIncludedPaths: string,
-    rawReturnAllIfChangedPaths: string,
+    rawIfThesePathsChangeReturnAllIncludedPaths: string,
     rawChangedTfDirectories: string,
     rawTfDirectories: string,
 ): string[] => {
     const includedPaths = cleanPaths(rawIncludedPaths);
-    const returnAllIfChangedPaths = cleanPaths(rawReturnAllIfChangedPaths);
+    const ifThesePathsChangeReturnAllIncludedPaths = cleanPaths(rawIfThesePathsChangeReturnAllIncludedPaths);
     const inputTfDirectories = cleanPaths(rawTfDirectories);
     const inputChangedTfDirectories = cleanPaths(rawChangedTfDirectories);
 
-    const hasReturnAllTrigger = returnAllIfChangedPaths.length !== 0
-    const hasReturnAllTriggerChanges = inputChangedTfDirectories.some(changed => matchPaths(returnAllIfChangedPaths, changed))
-    if (hasReturnAllTrigger && hasReturnAllTriggerChanges) {
+    const hasReturnAllIncludedTrigger = ifThesePathsChangeReturnAllIncludedPaths.length !== 0
+    const hasReturnAllIncludedTriggerChanges = inputChangedTfDirectories.some(changed => matchPaths(ifThesePathsChangeReturnAllIncludedPaths, changed))
+    if (hasReturnAllIncludedTrigger && hasReturnAllIncludedTriggerChanges) {
         return inputTfDirectories.filter(dir => matchPaths(includedPaths, dir))
     }
 

@@ -10,6 +10,7 @@ This action can be used as follows:
       - uses: tchupp/actions-detect-directory-changes@v1
         included-paths: ""
         included-extentions: ""
+        if-these-paths-change-return-all-included-paths: ""
 ```
 
 ## Background
@@ -170,6 +171,8 @@ With a simple repo layout like this, it's sufficient to use `path` filters with 
 
 ### Inputs
 
+Given the number of possible combinations of inputs, some possible use-cases may not be explicitly covered below.
+
 #### included-paths
 
 **Optional**. Comma-separated paths to narrow down the search for changes.  
@@ -181,6 +184,21 @@ There are a lot of interesting use-cases for this input.
 #### included-extentions
 
 **Optional**. Comma-separated file extentions to narrow down the search for changes. Defaults to all if not specified.
+
+There are a lot of interesting use-cases for this input.
+
+#### if-these-paths-change-return-all-included-paths
+
+**Note: I know the name is long and a little clunky, but it somewhat accurately describes how it works. Naming is hard.**
+
+**Optional**. Comma-separated paths to act as an override for the "changed" paths.  
+For example you may want to rebuild everything if a change is detected in your CI configuration, 
+or you may want to rebuild everything if a change is detected in a shared library.  
+The possibilities are endless!
+
+
+Respects "unix style" path globbing.  
+Defaults to all if not specified.
 
 There are a lot of interesting use-cases for this input.
 
@@ -236,4 +254,105 @@ jobs:
       - name: Build ${{ matrix.project }}
         working-directory: ./${{ matrix.project }}
         run: ./build.sh
+```
+
+### Simple Setup with CI Configuration
+
+This is a slightly more complete use-case.
+If you were to include this action in your repo, you would likely have a `.github` directory that wouldn't contain a `./build.sh` script.
+
+```bash
+$ tree
+.
+├── .github
+│   └── workflows
+│       └── build.yml
+├── my-awesome-nodejs-app
+│   ├── index.ts
+│   └── package.json
+└── a-neat-rust-project
+    ├── Cargo.toml
+    └── main.rs
+
+4 directories, 5 files
+```
+
+There are a few possible ways to handle this situation:
+
+#### Option 1: Use `included-extentions`
+
+You could use `included-extentions` to ignore changes to `.yml` files, however this might prevent detection of changes in project-level `.yml` files:
+
+```yaml
+on: <omitted for brevity, same as above>
+
+jobs:
+  detect-directory-changes:
+    name: "Detect Directory Changes"
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Detect Directory Changes
+        id: detect
+        uses: tchupp/actions-detect-directory-changes@v1
+        included-extentions: "!*.yml"
+
+  build: <omitted for brevity, same as above>
+```
+
+#### Option 2: Use `included-paths`
+
+You could use `included-paths` to only detect changes in the sub-projects, however this would require you to change some sub-project files anytime you wanted to trigger a rebuild:
+
+```yaml
+on: <omitted for brevity, same as above>
+
+jobs:
+  detect-directory-changes:
+    name: "Detect Directory Changes"
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Detect Directory Changes
+        id: detect
+        uses: tchupp/actions-detect-directory-changes@v1
+        included-paths: "!./.github/**"
+
+  build: <omitted for brevity, same as above>
+```
+
+
+#### Option 3: Use `if-these-paths-change-return-all-included-paths`
+
+With this configuration, the action would still correctly detect changes in the sub-projects,
+but would also trigger a rebuild on **all** sub-projects if any changes were detected in the `.github` directory:
+
+```yaml
+on: <omitted for brevity, same as above>
+
+jobs:
+  detect-directory-changes:
+    name: "Detect Directory Changes"
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Detect Directory Changes
+        id: detect
+        uses: tchupp/actions-detect-directory-changes@v1
+        included-paths: "!./.github/**"
+        if-these-paths-change-return-all-included-paths: "./.github/**"
+
+  build: <omitted for brevity, same as above>
 ```

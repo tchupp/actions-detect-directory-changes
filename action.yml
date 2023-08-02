@@ -13,7 +13,7 @@ inputs:
     required: false
     default: ""
   if-these-paths-change-return-all-included-paths:
-    description: "If the any terraform files on the following paths change, return all included files. (Comma-separated)"
+    description: "If the any files on the following paths change, return all included files. (Comma-separated)"
     required: false
     default: ""
 outputs:

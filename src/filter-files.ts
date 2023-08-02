@@ -35,20 +35,20 @@ export const filterFiles = (
     rawIncludedPaths: string,
     rawIfThesePathsChangeReturnAllIncludedPaths: string,
     rawChangedDirectories: string,
-    rawDirectories: string,
+    rawAllDirectories: string,
 ): string[] => {
     const includedPaths = cleanPaths(rawIncludedPaths);
     const ifThesePathsChangeReturnAllIncludedPaths = cleanPaths(rawIfThesePathsChangeReturnAllIncludedPaths);
-    const inputDirectories = cleanPaths(rawDirectories);
+    const inputAllDirectories = cleanPaths(rawAllDirectories);
     const inputChangedDirectories = cleanPaths(rawChangedDirectories);
 
     const hasReturnAllIncludedTrigger = ifThesePathsChangeReturnAllIncludedPaths.length !== 0
     const hasReturnAllIncludedTriggerChanges = inputChangedDirectories.some(changed => matchPaths(ifThesePathsChangeReturnAllIncludedPaths, changed))
     if (hasReturnAllIncludedTrigger && hasReturnAllIncludedTriggerChanges) {
-        return inputDirectories.filter(dir => matchPaths(includedPaths, dir))
+        return inputAllDirectories.filter(dir => matchPaths(includedPaths, dir))
     }
 
     return inputChangedDirectories
-        .filter(dir => inputDirectories.includes(dir))
+        .filter(dir => inputAllDirectories.includes(dir))
         .filter(dir => matchPaths(includedPaths, dir))
 }

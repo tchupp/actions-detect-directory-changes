@@ -211,6 +211,21 @@ describe("filterFiles", () => {
                     "modules/teams/leads",
                 ]);
         })
+
+        it("handles trailing commas", () => {
+            const result = filterFiles(
+                "./modules/** !./modules/humans, ",
+                "",
+                allDirectories,
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    "modules/teams/engineers",
+                    "modules/teams/leads",
+                ]);
+        })
     })
 
     describe("excludes", () => {
@@ -354,6 +369,22 @@ describe("filterFiles", () => {
             const result = filterFiles(
                 "dev staging production",
                 "modules/**",
+                "modules/humans",
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    "dev",
+                    "staging",
+                    "production",
+                ]);
+        })
+
+        it("returns all included when there are multiple 'return all' filters and 'modules' has changes", () => {
+            const result = filterFiles(
+                "dev staging production",
+                "modules/teams, modules/humans",
                 "modules/humans",
                 allDirectories
             );

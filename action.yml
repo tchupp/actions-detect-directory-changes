@@ -66,10 +66,12 @@ runs:
             fi
           done
           
-          changed_directories=( $(echo "${changed_directories[@]}" | sort -u) )
+          changed_directories=( $(echo "${changed_directories[@]}") )
         else
-          changed_directories=( $(echo "${changed_files}" | xargs -I {} dirname {} | sort -u) )
+          changed_directories=( $(echo "${changed_files}" | xargs -I {} dirname {}) )
         fi
+        changed_directories=( $(printf "%s\n" "${changed_directories[@]}" | sort -u) )
+        
         echo "changed_directories: ${changed_directories[@]}"
 
         all_directories=( $(find . -type d | sort -u) )

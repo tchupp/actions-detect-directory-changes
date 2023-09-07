@@ -78,7 +78,7 @@ runs:
         
         echo "changed_directories: ${changed_directories[@]}"
 
-        all_directories=( $(find . -type d -not -path "./.git/*" -not -path "./.git" | sort -u) )
+        all_directories=( $(git ls-files | xargs dirname | sort -u) )
         echo "all_directories: ${all_directories[@]}"
 
         echo "changed_directories=${changed_directories[@]}" >> $GITHUB_OUTPUT

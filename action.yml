@@ -59,6 +59,10 @@ runs:
             dirname=$(dirname -- "$changed_file")
             filename=$(basename -- "$changed_file")
             extension="${filename##*.}"
+
+            if [[ "${changed_file}" =~ ^.git/ ]]; then
+              continue
+            fi
         
             # included_extensions contains the changed file's extension
             if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then

@@ -114,7 +114,7 @@ describe("filterFiles", () => {
         })
     })
 
-    const allDirectories = ". ./dev ./staging ./production ./modules/humans ./modules/teams/engineers ./modules/teams/leads";
+    const allDirectories = ". ./dev ./staging ./production ./modules ./modules/humans ./modules/teams/engineers ./modules/teams/leads";
 
     describe("includes", () => {
         it("matches single directory (without './') exactly", () => {
@@ -159,6 +159,7 @@ describe("filterFiles", () => {
                     "dev",
                     "staging",
                     "production",
+                    "modules",
                 ]);
         })
 
@@ -189,6 +190,7 @@ describe("filterFiles", () => {
                     "dev",
                     "staging",
                     "production",
+                    "modules",
                     "modules/humans",
                     "modules/teams/engineers",
                     "modules/teams/leads",
@@ -255,6 +257,7 @@ describe("filterFiles", () => {
                 .toStrictEqual([
                     ".",
                     "production",
+                    "modules",
                     "modules/humans",
                     "modules/teams/engineers",
                     "modules/teams/leads",
@@ -311,9 +314,9 @@ describe("filterFiles", () => {
                 ]);
         })
 
-        it("matches double glob in a subdirectory", () => {
+        it("matches double glob at the root", () => {
             const result = filterFiles(
-                "!./modules/**",
+                "!**",
                 "",
                 allDirectories,
                 allDirectories
@@ -322,9 +325,6 @@ describe("filterFiles", () => {
             expect(result)
                 .toStrictEqual([
                     ".",
-                    "dev",
-                    "staging",
-                    "production",
                 ]);
         })
 
@@ -373,6 +373,7 @@ describe("filterFiles", () => {
                     "dev",
                     "staging",
                     "production",
+                    "modules",
                     "modules/humans",
                     "modules/teams/engineers",
                     "modules/teams/leads",
@@ -382,6 +383,22 @@ describe("filterFiles", () => {
         it("returns all included when 'modules' has changes", () => {
             const result = filterFiles(
                 "dev staging production",
+                "modules/**",
+                "modules/humans",
+                allDirectories
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    "dev",
+                    "staging",
+                    "production",
+                ]);
+        })
+
+        it("returns all non-excluded when 'modules' has changes", () => {
+            const result = filterFiles(
+                "!.,!./modules/**",
                 "modules/**",
                 "modules/humans",
                 allDirectories

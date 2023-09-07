@@ -18,7 +18,7 @@ inputs:
     default: ""
 outputs:
   changed:
-    description: "JSON encoded object that contains the changed files. '{ changed: Array<string> }'"
+    description: "JSON encoded array that contains the changed files. 'Array<string>'"
     value: ${{ steps.filter.outputs.result }}
 runs:
   using: "composite"

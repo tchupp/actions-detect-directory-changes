@@ -10,7 +10,7 @@ This action can be used as follows:
       - uses: tchupp/actions-detect-directory-changes@v1
         with:
           included-paths: ""
-          included-extentions: ""
+          included-extensions: ""
           if-these-paths-change-return-all-included-paths: ""
 ```
 
@@ -133,7 +133,7 @@ This action can be used as follows:
       - uses: tchupp/actions-detect-directory-changes@v1
         with:
           included-paths: ""
-          included-extentions: "" // ex. "md,txt" OR "java,kotlin" etc.
+          included-extensions: "" // ex. "md,txt" OR "java,kotlin" etc.
 ```
 
 ### Assumptions
@@ -183,9 +183,9 @@ Defaults to all if not specified.
 
 There are a lot of interesting use-cases for this input.
 
-#### included-extentions
+#### included-extensions
 
-**Optional**. Comma-separated file extentions to narrow down the search for changes. Defaults to all if not specified.
+**Optional**. Comma-separated file extensions to narrow down the search for changes. Defaults to all if not specified.
 
 There are a lot of interesting use-cases for this input.
 
@@ -281,9 +281,9 @@ $ tree
 
 There are a few possible ways to handle this situation:
 
-#### Option 1: Use `included-extentions`
+#### Option 1: Use `included-extensions`
 
-You could use `included-extentions` to ignore changes to `.yml` files, however this might prevent detection of changes in project-level `.yml` files:
+You could use `included-extensions` to ignore changes to `.yml` files, however this might prevent detection of changes in project-level `.yml` files:
 
 ```yaml
 on: <omitted for brevity, same as above>
@@ -302,7 +302,7 @@ jobs:
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
         with:
-          included-extentions: "!*.yml"
+          included-extensions: "!*.yml"
 
   build: <omitted for brevity, same as above>
 ```

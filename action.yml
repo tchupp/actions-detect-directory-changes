@@ -59,6 +59,10 @@ runs:
             dirname=$(dirname -- "$changed_file")
             filename=$(basename -- "$changed_file")
             extension="${filename##*.}"
+
+            if [[ "${changed_file}" =~ ^.git/ ]]; then
+              continue
+            fi
         
             # included_extensions contains the changed file's extension
             if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then
@@ -74,7 +78,7 @@ runs:
         
         echo "changed_directories: ${changed_directories[@]}"
 
-        all_directories=( $(find . -type d | sort -u) )
+        all_directories=( $(find . -type d -not -path "./.git/*" -not -path "./.git" | sort -u) )
         echo "all_directories: ${all_directories[@]}"
 
         echo "changed_directories=${changed_directories[@]}" >> $GITHUB_OUTPUT

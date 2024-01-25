@@ -93,7 +93,7 @@ runs:
         popd
     - name: Filter and Encode Output
       id: filter
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       env:
         INCLUDED_PATHS: ${{ inputs.included-paths }}
         IF_THESE_PATHS_CHANGE_RETURN_ALL_INCLUDED_PATHS: ${{ inputs.if-these-paths-change-return-all-included-paths }}

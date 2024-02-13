@@ -53,7 +53,7 @@ runs:
         
         echo "changed_files: ${changed_files[@]}"
 
-        all_files="$(git ls-files | sort -u)"
+        mapfile -t all_files < <(git ls-files | sort -u)
         echo "all_files: ${all_files[@]}"
 
         echo "changed_files=${changed_files[@]}" >> $GITHUB_OUTPUT

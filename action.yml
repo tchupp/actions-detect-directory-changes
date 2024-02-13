@@ -37,12 +37,12 @@ runs:
             base_ref="${GITHUB_BASE_REF}"
 
             git fetch origin "${base_ref}"
-            changed_files=( $(git --no-pager diff --name-only HEAD "origin/${base_ref}" | awk '{print "./"$1}') )
+            changed_files=$(git --no-pager diff --name-only HEAD "origin/${base_ref}" | awk '{print "./"$1}')
             ;;
 
           "push")
             git fetch origin "${{ github.event.before }}"
-            changed_files=( $(git --no-pager diff-tree --name-only -r ${{ github.event.before }}..${{ github.event.after }} | awk '{print "./"$1}') )
+            changed_files=$(git --no-pager diff-tree --name-only -r ${{ github.event.before }}..${{ github.event.after }} | awk '{print "./"$1}')
             ;;
 
           *)

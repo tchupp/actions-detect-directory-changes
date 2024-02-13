@@ -2,6 +2,7 @@ name: build+test
 
 on:
   - push
+  - pull_request
 
 jobs:
   build-test:
@@ -45,12 +46,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          if [[ "${{ needs.test-detect-changes.outputs.changed }}" != "[]" ]]; then
-            echo "Wanted '[]', but got '${{ needs.test-detect-changes.outputs.changed }}'"
-            exit 1
-          fi
           if [[ "${{ fromJSON(needs.test-detect-changes.outputs.changed) }}" != "Array" ]]; then
             echo "Wanted 'Array', but got '${{ fromJSON(needs.test-detect-changes.outputs.changed) }}'"
+            exit 1
+          fi
+          if ! [[ "${{ needs.test-detect-changes.outputs.changed }}" =~ [.*] ]]; then
+            echo "Wanted '[.*]', but got '${{ needs.test-detect-changes.outputs.changed }}'"
             exit 1
           fi
 

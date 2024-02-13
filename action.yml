@@ -18,7 +18,7 @@ inputs:
     default: ""
 outputs:
   changed:
-    description: "JSON encoded object that contains the changed files. '{ changed: Array<string> }'"
+    description: "JSON encoded array that contains the changed files. 'Array<string>'"
     value: ${{ steps.filter.outputs.result }}
 runs:
   using: "composite"
@@ -37,52 +37,27 @@ runs:
             base_ref="${GITHUB_BASE_REF}"
 
             git fetch origin "${base_ref}"
-            changed_files=( $(git --no-pager diff --name-only HEAD "origin/${base_ref}" | awk '{print "./"$1}') )
+            mapfile -t changed_files < <(git --no-pager diff --name-only HEAD "origin/${base_ref}" | awk '{print "./"$1}')
             ;;
 
           "push")
             git fetch origin "${{ github.event.before }}"
-            changed_files=( $(git --no-pager diff-tree --name-only -r ${{ github.event.before }}..${{ github.event.after }} | awk '{print "./"$1}') )
+            mapfile -t changed_files < <(git --no-pager diff-tree --name-only -r ${{ github.event.before }}..${{ github.event.after }} | awk '{print "./"$1}')
             ;;
 
           *)
-            changed_files=( $(find . -type f) )
+            changed_files="$(git ls-files | sort -u)"
+            mapfile -t changed_files < <(git ls-files | sort -u)
             ;;
         esac
         
-        IFS=',' read -r -a included_extensions <<< "${{ inputs.included-extensions }}"
-        
-        if [ ${#included_extensions[@]} -ne 0 ]; then
-          changed_directories=( )
-          
-          for changed_file in "${changed_files[@]}"; do
-            dirname=$(dirname -- "$changed_file")
-            filename=$(basename -- "$changed_file")
-            extension="${filename##*.}"
+        echo "changed_files: ${changed_files[@]}"
 
-            if [[ "${changed_file}" =~ ^.git/ ]]; then
-              continue
-            fi
-        
-            # included_extensions contains the changed file's extension
-            if [[ " ${included_extensions[*]} " =~ " ${extension} " ]]; then
-              changed_directories+=( "$dirname" )
-            fi
-          done
-          
-          changed_directories=( $(echo "${changed_directories[@]}") )
-        else
-          changed_directories=( $(echo "${changed_files}" | xargs -I {} dirname {}) )
-        fi
-        changed_directories=( $(printf "%s\n" "${changed_directories[@]}" | sort -u) )
-        
-        echo "changed_directories: ${changed_directories[@]}"
+        mapfile -t all_files < <(git ls-files | sort -u)
+        echo "all_files: ${all_files[@]}"
 
-        all_directories=( $(git ls-files | xargs dirname | sort -u) )
-        echo "all_directories: ${all_directories[@]}"
-
-        echo "changed_directories=${changed_directories[@]}" >> $GITHUB_OUTPUT
-        echo "all_directories=${all_directories[@]}" >> $GITHUB_OUTPUT
+        echo "changed_files=${changed_files[@]}" >> $GITHUB_OUTPUT
+        echo "all_files=${all_files[@]}" >> $GITHUB_OUTPUT
     - name: Build
       id: build
       shell: bash
@@ -96,21 +71,24 @@ runs:
       uses: actions/github-script@v7
       env:
         INCLUDED_PATHS: ${{ inputs.included-paths }}
+        INCLUDED_EXTENSIONS: ${{ inputs.included-extensions }}
         IF_THESE_PATHS_CHANGE_RETURN_ALL_INCLUDED_PATHS: ${{ inputs.if-these-paths-change-return-all-included-paths }}
-        CHANGED_DIRECTORIES: ${{ steps.find-changed-files.outputs.changed_directories }}
-        ALL_DIRECTORIES: ${{ steps.find-changed-files.outputs.all_directories }}
+        CHANGED_FILES: ${{ steps.find-changed-files.outputs.changed_files }}
+        ALL_FILES: ${{ steps.find-changed-files.outputs.all_files }}
       with:
         script: |
           const script = require(`${process.env.GITHUB_ACTION_PATH}/dist/index.js`);
 
           const rawIncludedPaths = process.env.INCLUDED_PATHS;
+          const rawIncludedExtensions = process.env.INCLUDED_EXTENSIONS;
           const rawIfThesePathsChangeReturnAllIncludedPaths = process.env.IF_THESE_PATHS_CHANGE_RETURN_ALL_INCLUDED_PATHS;
-          const rawChangedDirectories = process.env.CHANGED_DIRECTORIES;
-          const rawAllDirectories = process.env.ALL_DIRECTORIES;
+          const rawChangedFiles = process.env.CHANGED_FILES;
+          const rawAllFiles = process.env.ALL_FILES;
 
           return script.default(
             rawIncludedPaths,
+            rawIncludedExtensions,
             rawIfThesePathsChangeReturnAllIncludedPaths,
-            rawChangedDirectories,
-            rawAllDirectories,
+            rawChangedFiles,
+            rawAllFiles,
           );

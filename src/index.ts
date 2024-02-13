@@ -2,13 +2,15 @@ import {filterFiles} from "./filter-files";
 
 export default (
     rawIncludedPaths: string | undefined,
+    rawIncludedExtensions: string | undefined,
     rawIfThesePathsChangeReturnAllIncludedPaths: string | undefined,
-    rawChangedDirectories: string | undefined,
-    rawAllDirectories: string | undefined,
+    rawChangedFiles: string | undefined,
+    rawAllFiles: string | undefined,
 ) =>
     filterFiles(
         rawIncludedPaths ?? "",
+        rawIncludedExtensions ?? "",
         rawIfThesePathsChangeReturnAllIncludedPaths ?? "",
-        rawChangedDirectories ?? "",
-        rawAllDirectories ?? "",
+        rawChangedFiles ?? "",
+        rawAllFiles ?? "",
     )

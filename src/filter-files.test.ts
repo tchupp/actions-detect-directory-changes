@@ -643,5 +643,29 @@ describe("filterFiles", () => {
                     ...allTeamDirectories,
                 ]);
         })
+
+        it("returns all directories without md files, when a GHA workflow changed", () => {
+            const result = filterFiles(
+                "",
+                "!.md",
+                ".github/**",
+                ".github/workflows/terraform.yml",
+                allFiles.join(" ")
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    ".",
+                    ".circleci",
+                    ".config",
+                    ".github",
+                    ".github/workflows",
+                    "examples",
+                    ...allModuleDirectories,
+                    "scripts",
+                    "teams",
+                    ...allTeamDirectories,
+                ]);
+        })
     });
 })

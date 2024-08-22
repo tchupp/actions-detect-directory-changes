@@ -175,6 +175,21 @@ describe("filterFiles", () => {
                 ]);
         })
 
+        it("keeps directories where only one file was removed", () => {
+            const result = filterFiles(
+                "",
+                "",
+                "",
+                "modules/admins/github.tf",
+                allFiles.filter(f => f != "modules/admins/github.tf").join(" "),
+            );
+
+            expect(result)
+                .toStrictEqual([
+                    "modules/admins",
+                ]);
+        })
+
         it("only includes directories that changed", () => {
             const result = filterFiles(
                 "",

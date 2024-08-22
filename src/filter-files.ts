@@ -96,7 +96,7 @@ function determineWhichSetOfFilesToReturn(
         .filter(unique);
 
     const existingChangedFiles = inputChangedFiles
-        .filter(changedFile =>  inputAllExistingDirectories.includes(dirname(changedFile)));
+        .filter(changedFile => inputAllExistingDirectories.includes(dirname(changedFile)));
 
     const hasReturnAllIncludedTrigger = ifThesePathsChangeReturnAllIncludedPaths.length !== 0;
     if (hasReturnAllIncludedTrigger) {

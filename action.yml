@@ -68,7 +68,7 @@ runs:
         popd
     - name: Filter and Encode Output
       id: filter
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       env:
         INCLUDED_PATHS: ${{ inputs.included-paths }}
         INCLUDED_EXTENSIONS: ${{ inputs.included-extensions }}
